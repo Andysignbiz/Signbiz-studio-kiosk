@@ -9,7 +9,7 @@ import signbiz.kiosk.data.KioskSettingsFactory
 @Composable
 fun MainScreen(activity: Activity, modifier: Modifier) {
     val context = LocalContext.current
-    var url by remember { mutableStateOf("about:blank") }
+    var url by remember { mutableStateOf("") }
     val kioskSettings = remember { KioskSettingsFactory.get(context) }
 
     LaunchedEffect(Unit) {
@@ -18,7 +18,11 @@ fun MainScreen(activity: Activity, modifier: Modifier) {
         }
     }
 
-    key(url) {
-        WebViewComponent(url = url, activity = activity, modifier)
+    if (url.isEmpty()) {
+        WelcomeScreen()
+    } else {
+        key(url) {
+            WebViewComponent(url = url, activity = activity, modifier)
+        }
     }
 }
