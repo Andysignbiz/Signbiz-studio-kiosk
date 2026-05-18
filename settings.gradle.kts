@@ -19,6 +19,6 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Screenlite Web Kiosk"
+rootProject.name = "Signbiz Studio"
 include(":app")
  

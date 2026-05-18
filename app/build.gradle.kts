@@ -47,6 +47,17 @@ android {
     buildFeatures {
         compose = true
     }
+
+    sourceSets {
+        getByName("main") {
+            // Exclude duplicate PNG icon files - icons are provided as .webp
+            res.exclude(
+                "**/mipmap-*/ic_launcher.png",
+                "**/mipmap-*/ic_launcher_round.png",
+                "**/mipmap-*/ic_launcher_foreground.png"
+            )
+        }
+    }
 }
 
 dependencies {
