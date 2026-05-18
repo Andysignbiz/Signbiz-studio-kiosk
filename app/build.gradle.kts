@@ -47,16 +47,29 @@ android {
     buildFeatures {
         compose = true
     }
+}
 
-    sourceSets {
-        getByName("main") {
-            // Exclude duplicate PNG icon files - icons are provided as .webp
-            res.exclude(
-                "**/mipmap-*/ic_launcher.png",
-                "**/mipmap-*/ic_launcher_round.png",
-                "**/mipmap-*/ic_launcher_foreground.png"
-            )
+// Remove duplicate PNG icon files before resource merge.
+// Icons are provided as .webp - the .png versions cause duplicate resource errors.
+val removeDuplicateIconPngs by tasks.registering {
+    doLast {
+        val mipmapDirs = listOf("mipmap-mdpi", "mipmap-hdpi", "mipmap-xhdpi", "mipmap-xxhdpi", "mipmap-xxxhdpi")
+        val pngNames = listOf("ic_launcher.png", "ic_launcher_round.png", "ic_launcher_foreground.png")
+        mipmapDirs.forEach { dir ->
+            pngNames.forEach { name ->
+                val f = File(projectDir, "src/main/res/$dir/$name")
+                if (f.exists()) {
+                    f.delete()
+                    println("Removed duplicate: $dir/$name")
+                }
+            }
         }
+    }
+}
+
+afterEvaluate {
+    tasks.matching { it.name == "mergeDebugResources" || it.name == "mergeReleaseResources" }.configureEach {
+        dependsOn(removeDuplicateIconPngs)
     }
 }
 
