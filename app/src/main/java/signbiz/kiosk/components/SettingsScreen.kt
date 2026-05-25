@@ -21,6 +21,8 @@ import signbiz.kiosk.data.KioskSettingsFactory
 import signbiz.kiosk.data.Rotation
 import signbiz.kiosk.service.StayOnTopService
 
+private const val DEFAULT_URL = "https://cms.signbiz-orders.co.nz/player.php?token="
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen() {
@@ -37,7 +39,9 @@ fun SettingsScreen() {
     var selectedTabIndex by remember { mutableIntStateOf(0) }
 
     LaunchedEffect(Unit) {
-        kioskUrl = kioskSettings.getStartUrl().first()
+        val savedUrl = kioskSettings.getStartUrl().first()
+        // Pre-fill base URL if nothing has been saved yet
+        kioskUrl = if (savedUrl.isEmpty()) DEFAULT_URL else savedUrl
         checkIntervalSeconds = (kioskSettings.getCheckInterval().first() / 1000).toString()
         rotation = kioskSettings.getRotation().first()
     }
@@ -56,8 +60,9 @@ fun SettingsScreen() {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
+                .padding(horizontal = 48.dp, vertical = 24.dp)  // outer margins on all sides
         ) {
-            ScrollableTabRow(selectedTabIndex = selectedTabIndex, edgePadding = 16.dp) {
+            ScrollableTabRow(selectedTabIndex = selectedTabIndex, edgePadding = 0.dp) {
                 tabs.forEachIndexed { index, title ->
                     Tab(
                         selected = selectedTabIndex == index,
@@ -84,10 +89,13 @@ fun SettingsScreen() {
                 )
             }
 
-            Spacer(Modifier.height(32.dp))
+            Spacer(Modifier.weight(1f))
 
+            // Buttons row — pushed to bottom with comfortable margin from edge
             Row(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 32.dp),
                 horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.End)
             ) {
                 FocusableButton(
@@ -135,7 +143,6 @@ fun GeneralSettingsTab(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(Modifier.height(24.dp))
@@ -177,7 +184,6 @@ fun DisplaySettingsTab(
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 48.dp)
             .verticalScroll(rememberScrollState())
     ) {
         Spacer(Modifier.height(24.dp))
