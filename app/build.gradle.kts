@@ -47,6 +47,15 @@ android {
     buildFeatures {
         compose = true
     }
+
+    applicationVariants.all {
+        val variant = this
+        outputs
+            .map { it as com.android.build.gradle.internal.api.BaseVariantOutputImpl }
+            .forEach { output ->
+                output.outputFileName = "signbiz-studio-kiosk-${variant.buildType.name}.apk"
+            }
+    }
 }
 
 // Remove duplicate PNG icon files before resource merge.
